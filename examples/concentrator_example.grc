@@ -1,0 +1,404 @@
+options:
+  parameters:
+    author: LoRa Concentrator
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    copyright: ''
+    description: LoRa Concentrator Example Flowgraph
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: concentrator_example
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: LoRa Concentrator Example
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+- name: channel_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '250000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [312, 12]
+    rotation: 0
+    state: enabled
+- name: freq_offset
+  id: variable
+  parameters:
+    comment: ''
+    value: '100000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [432, 12]
+    rotation: 0
+    state: enabled
+
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: freq_offset
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 172.0]
+    rotation: 0
+    state: true
+
+- name: blocks_throttle_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [248, 212.0]
+    rotation: 0
+    state: true
+
+- name: freq_xlating_fir_filter_xxx_0
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: freq_offset
+    comment: ''
+    decim: int(samp_rate/channel_rate)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    taps: firdes.low_pass(1, samp_rate, 125000/2*1.2, 125000*0.2)
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [448, 188.0]
+    rotation: 0
+    state: true
+
+- name: lora_concentrator_channel_sensor_0
+  id: lora_concentrator_channel_sensor
+  parameters:
+    affinity: ''
+    alias: ''
+    channel_freq: 868100000
+    channel_index: '0'
+    comment: ''
+    energy_threshold_db: '-100.0'
+    samp_rate: channel_rate
+    window_size_ms: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 100.0]
+    rotation: 0
+    state: true
+
+- name: lora_sdr_frame_sync_0
+  id: lora_sdr_frame_sync
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: '125000'
+    center_freq: '868100000'
+    comment: ''
+    impl_head: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    os_factor: int(channel_rate/125000)
+    preamb_len: '8'
+    sf: '7'
+    sync_word: '[0x34]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 244.0]
+    rotation: 0
+    state: true
+
+- name: lora_concentrator_metadata_extractor_0
+  id: lora_concentrator_metadata_extractor
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: '125000'
+    channel_freq: 868100000
+    channel_index: '0'
+    comment: ''
+    gateway_id: '"gw-test-01"'
+    sf: '7'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 412.0]
+    rotation: 0
+    state: true
+
+- name: lora_sdr_fft_demod_0
+  id: lora_sdr_fft_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    out_sig: 'True'
+    soft_decoding: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1024, 252.0]
+    rotation: 0
+    state: true
+
+- name: lora_sdr_gray_mapping_0
+  id: lora_sdr_gray_mapping
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    soft_decoding: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 260.0]
+    rotation: 0
+    state: true
+
+- name: lora_sdr_deinterleaver_0
+  id: lora_sdr_deinterleaver
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    soft_decoding: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1432, 260.0]
+    rotation: 0
+    state: true
+
+- name: lora_sdr_hamming_dec_0
+  id: lora_sdr_hamming_dec
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    soft_decoding: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1432, 364.0]
+    rotation: 180
+    state: true
+
+- name: lora_sdr_header_decoder_0
+  id: lora_sdr_header_decoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    cr: '1'
+    has_crc: 'True'
+    impl_head: 'False'
+    ldro: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pay_len: '255'
+    print_header: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 332.0]
+    rotation: 180
+    state: true
+
+- name: lora_sdr_dewhitening_0
+  id: lora_sdr_dewhitening
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [960, 368.0]
+    rotation: 180
+    state: true
+
+- name: lora_sdr_crc_verif_0
+  id: lora_sdr_crc_verif
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    out_sig: 'True'
+    print_rx_msg: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 364.0]
+    rotation: 180
+    state: true
+
+- name: lora_concentrator_mqtt_sink_0
+  id: lora_concentrator_mqtt_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    broker_host: '"localhost"'
+    broker_port: '1883'
+    ca_cert_path: '""'
+    client_id: '"gw-001-pub"'
+    comment: ''
+    gateway_id: '"gw-001"'
+    password: '""'
+    qos: '1'
+    tls_enabled: 'False'
+    username: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 436.0]
+    rotation: 180
+    state: true
+
+- name: lora_concentrator_mqtt_source_0
+  id: lora_concentrator_mqtt_source
+  parameters:
+    affinity: ''
+    alias: ''
+    broker_host: '"localhost"'
+    broker_port: '1883'
+    ca_cert_path: '""'
+    client_id: '"gw-001-sub"'
+    comment: ''
+    gateway_id: '"gw-001"'
+    password: '""'
+    qos: '1'
+    tls_enabled: 'False'
+    username: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 428.0]
+    rotation: 0
+    state: true
+
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [280, 592.0]
+    rotation: 0
+    state: true
+
+connections:
+- [analog_sig_source_x_0, '0', blocks_throttle_0, '0']
+- [blocks_throttle_0, '0', freq_xlating_fir_filter_xxx_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', lora_concentrator_channel_sensor_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', lora_sdr_frame_sync_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', lora_concentrator_metadata_extractor_0, '0']
+- [lora_sdr_frame_sync_0, '0', lora_sdr_fft_demod_0, '0']
+- [lora_sdr_fft_demod_0, '0', lora_sdr_gray_mapping_0, '0']
+- [lora_sdr_gray_mapping_0, '0', lora_sdr_deinterleaver_0, '0']
+- [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
+- [lora_sdr_hamming_dec_0, '0', lora_sdr_header_decoder_0, '0']
+- [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
+- [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
+- [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
+- [lora_sdr_crc_verif_0, msg, lora_concentrator_mqtt_sink_0, rx_payload]
+- [lora_concentrator_metadata_extractor_0, metadata, lora_concentrator_mqtt_sink_0, rx_metadata]
+- [lora_concentrator_channel_sensor_0, sensing, lora_concentrator_mqtt_sink_0, sensing]
+- [lora_concentrator_mqtt_source_0, tx_request, blocks_message_debug_0, print]
+
+metadata:
+  file_format: 1

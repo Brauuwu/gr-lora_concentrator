@@ -1,0 +1,58 @@
+id: lora_concentrator_mqtt_sink
+label: MQTT Publisher
+category: '[lora_concentrator]'
+
+templates:
+  imports: import gnuradio.lora_concentrator as lora_concentrator
+  make: lora_concentrator.mqtt_sink(${broker_host}, ${broker_port}, ${client_id}, ${gateway_id}, ${username}, ${password}, ${qos}, ${tls_enabled}, ${ca_cert_path})
+
+parameters:
+- id: broker_host
+  label: Broker Host
+  dtype: string
+  default: '"localhost"'
+- id: broker_port
+  label: Broker Port
+  dtype: int
+  default: 1883
+- id: client_id
+  label: Client ID
+  dtype: string
+  default: '"gw-001-pub"'
+- id: gateway_id
+  label: Gateway ID
+  dtype: string
+  default: '"gw-001"'
+- id: username
+  label: Username
+  dtype: string
+  default: '""'
+- id: password
+  label: Password
+  dtype: string
+  default: '""'
+- id: qos
+  label: QoS
+  dtype: int
+  default: 1
+- id: tls_enabled
+  label: Enable TLS
+  dtype: bool
+  default: False
+- id: ca_cert_path
+  label: CA Cert Path
+  dtype: string
+  default: '""'
+
+inputs:
+- label: rx_payload
+  domain: message
+  optional: true
+- label: rx_metadata
+  domain: message
+  optional: true
+- label: sensing
+  domain: message
+  optional: true
+
+file_format: 1

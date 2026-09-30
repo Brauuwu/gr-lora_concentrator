@@ -1,0 +1,41 @@
+id: lora_concentrator_channel_sensor
+label: Channel Sensor
+category: '[lora_concentrator]'
+
+templates:
+  imports: import gnuradio.lora_concentrator as lora_concentrator
+  make: lora_concentrator.channel_sensor(${channel_index}, ${channel_freq}, ${samp_rate}, ${energy_threshold_db}, ${window_size_ms})
+
+parameters:
+- id: channel_index
+  label: Channel Index
+  dtype: int
+  default: 0
+- id: channel_freq
+  label: Channel Frequency
+  dtype: int
+  default: 868100000
+- id: samp_rate
+  label: Sample Rate
+  dtype: int
+  default: 250000
+- id: energy_threshold_db
+  label: Energy Threshold (dB)
+  dtype: float
+  default: -100.0
+- id: window_size_ms
+  label: Window Size (ms)
+  dtype: int
+  default: 100
+
+inputs:
+- label: in
+  domain: stream
+  dtype: complex
+
+outputs:
+- label: sensing
+  domain: message
+  optional: true
+
+file_format: 1

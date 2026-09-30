@@ -1,0 +1,46 @@
+id: lora_concentrator_metadata_extractor
+label: Metadata Extractor
+category: '[lora_concentrator]'
+
+templates:
+  imports: import gnuradio.lora_concentrator as lora_concentrator
+  make: lora_concentrator.metadata_extractor(${channel_index}, ${channel_freq}, ${sf}, ${bw}, ${gateway_id})
+
+parameters:
+- id: channel_index
+  label: Channel Index
+  dtype: int
+  default: 0
+- id: channel_freq
+  label: Channel Frequency
+  dtype: int
+  default: 868100000
+- id: sf
+  label: Spreading Factor
+  dtype: int
+  default: 7
+- id: bw
+  label: Bandwidth
+  dtype: int
+  default: 125000
+- id: gateway_id
+  label: Gateway ID
+  dtype: string
+  default: '"gw-001"'
+
+inputs:
+- label: in
+  domain: stream
+  dtype: complex
+- label: sync_log
+  domain: message
+  optional: true
+
+outputs:
+- label: out
+  domain: stream
+  dtype: complex
+- label: metadata
+  domain: message
+
+file_format: 1

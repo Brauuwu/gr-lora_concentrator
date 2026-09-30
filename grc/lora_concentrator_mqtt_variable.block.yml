@@ -1,0 +1,39 @@
+id: lora_concentrator_mqtt_variable
+label: MQTT Variable
+category: '[lora_concentrator]'
+flags: [ python ]
+
+parameters:
+- id: broker_host
+  label: Broker Host
+  dtype: string
+  default: '"localhost"'
+- id: broker_port
+  label: Broker Port
+  dtype: int
+  default: 1883
+- id: topic
+  label: MQTT Topic
+  dtype: string
+  default: '"lora/var/my_variable"'
+- id: value
+  label: Default Value
+  dtype: raw
+  default: '0'
+- id: type_cast
+  label: Value Type
+  dtype: string
+  default: float
+  options: [float, int, str]
+
+templates:
+  imports: |-
+    import gnuradio.lora_concentrator as lora_concentrator
+  var_make: |-
+    self.${id} = ${id} = ${value}
+    self.mqtt_var_blk_${id} = lora_concentrator.mqtt_variable(${broker_host}, ${broker_port}, ${topic})
+    self.mqtt_var_blk_${id}.set_callback(lambda val: self.set_${id}(${type_cast}(val)))
+  callbacks:
+  - self.set_${id}(${value})
+
+file_format: 1

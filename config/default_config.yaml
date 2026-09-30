@@ -1,0 +1,131 @@
+# LoRa SDR Concentrator Configuration
+# =====================================
+
+gateway:
+  id: "gw-lora-sdr-001"
+  description: "LoRa SDR Concentrator"
+
+# SDR Source Configuration
+# Supported types: "uhd" (USRP), "rtlsdr", "hackrf", "limesdr", "soapy"
+sdr:
+  type: "uhd"
+  uhd_args: "addr=192.168.10.2"
+  soapy_driver: ""
+  soapy_args: ""
+  sample_rate: 1000000
+  center_freq: 868000000
+  gain: 30
+  antenna: "TX/RX"
+  bandwidth: 0
+
+frequency_plan: "EU868"
+
+plans:
+  EU868:
+    channels:
+      - { index: 0, freq: 868100000, bw: 125000, enabled: true }
+      - { index: 1, freq: 868300000, bw: 125000, enabled: true }
+      - { index: 2, freq: 868500000, bw: 125000, enabled: true }
+      - { index: 3, freq: 867100000, bw: 125000, enabled: true }
+      - { index: 4, freq: 867300000, bw: 125000, enabled: true }
+      - { index: 5, freq: 867500000, bw: 125000, enabled: true }
+      - { index: 6, freq: 867700000, bw: 125000, enabled: true }
+      - { index: 7, freq: 867900000, bw: 125000, enabled: true }
+    downlink_freq: 869525000
+    spreading_factors: [7, 8, 9, 10, 11, 12]
+    sync_word: [0x34]
+
+  US915:
+    channels:
+      - { index: 0, freq: 902300000, bw: 125000, enabled: true }
+      - { index: 1, freq: 902500000, bw: 125000, enabled: true }
+      - { index: 2, freq: 902700000, bw: 125000, enabled: true }
+      - { index: 3, freq: 902900000, bw: 125000, enabled: true }
+      - { index: 4, freq: 903100000, bw: 125000, enabled: true }
+      - { index: 5, freq: 903300000, bw: 125000, enabled: true }
+      - { index: 6, freq: 903500000, bw: 125000, enabled: true }
+      - { index: 7, freq: 903700000, bw: 125000, enabled: true }
+    downlink_freq: 923300000
+    spreading_factors: [7, 8, 9, 10, 11, 12]
+    sync_word: [0x34]
+
+  AS923:
+    channels:
+      - { index: 0, freq: 923200000, bw: 125000, enabled: true }
+      - { index: 1, freq: 923400000, bw: 125000, enabled: true }
+      - { index: 2, freq: 922200000, bw: 125000, enabled: true }
+      - { index: 3, freq: 922400000, bw: 125000, enabled: true }
+      - { index: 4, freq: 922600000, bw: 125000, enabled: true }
+      - { index: 5, freq: 922800000, bw: 125000, enabled: true }
+      - { index: 6, freq: 923000000, bw: 125000, enabled: true }
+      - { index: 7, freq: 921800000, bw: 125000, enabled: true }
+    downlink_freq: 923200000
+    spreading_factors: [7, 8, 9, 10, 11, 12]
+    sync_word: [0x34]
+
+custom_channels:
+  - { index: 0, freq: 868100000, bw: 125000, enabled: true }
+
+lora_rx:
+  spreading_factors: [7, 8, 9, 10, 11, 12]
+  coding_rate: 1
+  has_crc: true
+  implicit_header: false
+  soft_decoding: true
+  ldro_mode: 2
+  sync_word: [0x34]
+  payload_length: 255
+
+lora_tx:
+  spreading_factor: 12
+  bandwidth: 125000
+  coding_rate: 1
+  has_crc: true
+  implicit_header: false
+  sync_word: [0x34]
+  tx_power: 14
+
+mqtt:
+  enabled: true
+  broker_host: "localhost"
+  broker_port: 1883
+  username: ""
+  password: ""
+  client_id: "lora-concentrator-001"
+  keepalive: 60
+  qos: 1
+  tls_enabled: false
+  tls_ca_cert: ""
+  tls_client_cert: ""
+  tls_client_key: ""
+  topics:
+    rx_data: "lora/{gateway_id}/rx/{channel}/{sf}/data"
+    rx_metadata: "lora/{gateway_id}/rx/{channel}/{sf}/metadata"
+    tx_request: "lora/{gateway_id}/tx/request"
+    tx_ack: "lora/{gateway_id}/tx/ack"
+    sensing: "lora/{gateway_id}/sensing"
+    status: "lora/{gateway_id}/status"
+    config: "lora/{gateway_id}/config"
+
+sensing:
+  enabled: true
+  interval_ms: 1000
+  energy_threshold_db: -100
+  publish_interval_ms: 5000
+
+metadata:
+  export_snr: true
+  export_rssi: true
+  export_cfo: true
+  export_sto: true
+  export_sfo: true
+  export_crc_status: true
+  export_timestamp: true
+  export_frame_count: true
+  log_to_file: false
+  log_file: "lora_metadata.jsonl"
+
+logging:
+  level: "INFO"
+  console: true
+  file: ""
