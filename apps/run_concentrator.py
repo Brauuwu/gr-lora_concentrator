@@ -17,19 +17,55 @@ class ConcentratorApp(gr.top_block):
             
         self.gateway_id = self.config.get("gateway", {}).get("id", "gw-001")
         
-        # 1. Source (using SoapySDR as an example)
-        # In a real app, you would parse the config to choose the source
+        # 1. Source configuration
         sdr_cfg = self.config.get("sdr", {})
         self.samp_rate = sdr_cfg.get("sample_rate", 1000000)
         self.center_freq = sdr_cfg.get("center_freq", 868000000)
+        sdr_type = sdr_cfg.get("type", "soapy").lower()
+        sdr_gain = sdr_cfg.get("gain", 30)
         
         try:
-            from gnuradio import soapy
-            self.source = soapy.source("driver=rtlsdr", "fc32", 1, "", "", [""], 
-                                     [self.center_freq], [self.samp_rate], [0])
-            self.source.set_gain(0, sdr_cfg.get("gain", 30))
-        except ImportError:
-            print("SoapySDR not available. Using null source for testing.")
+            if sdr_type == "uhd":
+                from gnuradio import uhd
+                uhd_args = sdr_cfg.get("uhd_args", "")
+                self.source = uhd.usrp_source(
+                    ",".join(("", uhd_args)),
+                    uhd.stream_args(cpu_format="fc32", args="", channels=list(range(1))),
+                )
+                self.source.set_samp_rate(self.samp_rate)
+                self.source.set_center_freq(self.center_freq, 0)
+                self.source.set_gain(sdr_gain, 0)
+                self.source.set_antenna(sdr_cfg.get("antenna", "TX/RX"), 0)
+                
+            elif sdr_type == "osmosdr":
+                from gnuradio import osmosdr
+                self.source = osmosdr.source(args="numrecv=1")
+                self.source.set_sample_rate(self.samp_rate)
+                self.source.set_center_freq(self.center_freq, 0)
+                self.source.set_freq_corr(0, 0)
+                self.source.set_dc_offset_mode(2, 0)
+                self.source.set_iq_balance_mode(2, 0)
+                self.source.set_gain_mode(False, 0)
+                self.source.set_gain(sdr_gain, 0)
+                self.source.set_antenna(sdr_cfg.get("antenna", ""), 0)
+                
+            else:
+                # Default to SoapySDR for "rtlsdr", "hackrf", "limesdr", "soapy"
+                from gnuradio import soapy
+                driver = sdr_type if sdr_type != "soapy" else sdr_cfg.get("soapy_driver", "")
+                dev_args = f"driver={driver}" if driver else ""
+                soapy_args = sdr_cfg.get("soapy_args", "")
+                if soapy_args:
+                    dev_args += f",{soapy_args}"
+                    
+                self.source = soapy.source(dev_args, "fc32", 1, "", "", [""], 
+                                         [self.center_freq], [self.samp_rate], [sdr_gain])
+                if sdr_cfg.get("antenna"):
+                    self.source.set_antenna(0, sdr_cfg.get("antenna"))
+                    
+        except ImportError as e:
+            print(f"Error loading SDR driver '{sdr_type}': {e}")
+            print("Using null_source for testing.")
             self.source = blocks.null_source(gr.sizeof_gr_complex)
             
         # 2. MQTT Sink (Publisher)

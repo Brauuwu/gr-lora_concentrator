@@ -35,6 +35,15 @@ plans:
     spreading_factors: [7, 8, 9, 10, 11, 12]
     sync_word: [0x34]
 
+  EU433:
+    channels:
+      - { index: 0, freq: 433175000, bw: 125000, enabled: true }
+      - { index: 1, freq: 433375000, bw: 125000, enabled: true }
+      - { index: 2, freq: 433575000, bw: 125000, enabled: true }
+    downlink_freq: 434665000
+    spreading_factors: [7, 8, 9, 10, 11, 12]
+    sync_word: [0x34]
+
   US915:
     channels:
       - { index: 0, freq: 902300000, bw: 125000, enabled: true }
