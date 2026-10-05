@@ -23,6 +23,9 @@ target_link_libraries(gnuradio-lora_concentrator
 if(PAHO_MQTT_FOUND)
     target_compile_definitions(gnuradio-lora_concentrator PRIVATE HAVE_PAHO_MQTT)
     target_link_libraries(gnuradio-lora_concentrator ${PAHO_MQTT_C_LIBRARY})
+    # pybind11 is needed in the library for GIL management (mqtt_variable calls Python callbacks)
+    target_include_directories(gnuradio-lora_concentrator PRIVATE ${pybind11_INCLUDE_DIRS} ${Python3_INCLUDE_DIRS})
+    target_link_libraries(gnuradio-lora_concentrator Python3::Python)
 endif()
 
 target_include_directories(gnuradio-lora_concentrator
@@ -42,11 +45,15 @@ endif(APPLE)
 # Install built library files
 ########################################################################
 include(GrMiscUtils)
-GR_LIBRARY_FOO(gnuradio-lora_concentrator)
+
+set_target_properties(gnuradio-lora_concentrator PROPERTIES
+    SOVERSION ${VERSION_MAJOR}
+    VERSION ${VERSION_MAJOR}.${VERSION_API}.${VERSION_ABI}
+)
 
 install(TARGETS gnuradio-lora_concentrator
-    EXPORT lora_concentrator-export
     LIBRARY DESTINATION lib${LIB_SUFFIX} # .so/.dylib file
     ARCHIVE DESTINATION lib${LIB_SUFFIX} # .lib file
     RUNTIME DESTINATION bin              # .dll file
 )
+

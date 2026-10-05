@@ -2,6 +2,10 @@
 #include <iostream>
 #include <chrono>
 
+#ifdef HAVE_PAHO_MQTT
+#include <pybind11/pybind11.h>
+#endif
+
 #include "mqtt_variable_impl.h"
 
 namespace gr {

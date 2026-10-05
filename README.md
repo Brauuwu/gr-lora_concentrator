@@ -40,6 +40,28 @@ sudo make install
 sudo ldconfig
 ```
 
+## Installation (Conda Environment - grlora)
+
+If you are using the `grlora` Conda environment for GNU Radio:
+
+1. **Activate the environment**:
+```bash
+conda activate grlora
+```
+
+2. **Install missing build dependencies if needed**:
+Make sure system `cmake` is available or install it.
+
+3. **Build and Install**:
+```bash
+git clone https://github.com/Brauuwu/gr-lora_concentrator.git
+cd gr-lora_concentrator
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX ..
+make -j$(nproc)
+make install
+```
+
 ## Available GRC Blocks
 
 Once installed, the following blocks will appear in GNU Radio Companion under the `[lora_concentrator]` category:

@@ -1,3 +1,10 @@
+/*
+ * BINDTOOL_GEN_AUTOMATIC(0)
+ * BINDTOOL_USE_PYGCCXML(0)
+ * BINDTOOL_HEADER_FILE(mqtt_sink.h)
+ * BINDTOOL_HEADER_FILE_HASH(0)
+ */
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
